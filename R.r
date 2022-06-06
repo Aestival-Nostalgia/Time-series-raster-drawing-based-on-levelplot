@@ -1,7 +1,7 @@
 library(raster)
 library(rasterVis)
 library(rgdal)
-#library(lattice)
+library(lattice)
 
 library(ggplot2)
 library(ggthemes)
@@ -20,8 +20,8 @@ setwd('D:\\新建文件夹')
 windowsFonts(myFont = windowsFont("Times New Roman"))
 
 # set path and shape file name
-Boundary_shp_path <- "/Boundary/"
-Boundary_shp_name <- "boundary.shp"
+Boundary_shp_path <- "Boundary/"
+Boundary_shp_name <- "boundary_line.shp"
 Boundary_shp_file <- paste(Boundary_shp_path, Boundary_shp_name, sep="")
 
 # read the shapefile
@@ -29,7 +29,7 @@ Boundary_shp <- read_sf(Boundary_shp_file)
 Boundary_outline <- as(st_geometry(Boundary_shp), Class="Spatial")
 
 # plot the outline
-plot(coast_outline, col="gray50", lwd=1)
+#plot(Boundary_outline, col="gray50", lwd=1)
 
 #读取⽂件夹中格式为tif的文件
 files = list.files(pattern ='.tif$', full.names = T)
@@ -38,7 +38,7 @@ files = list.files(pattern ='.tif$', full.names = T)
 #unique(values(raster_1))
 
 #将前n个⽂件导⼊stack
-RasterData <- stack(files[1:4])
+RasterData <- stack(files[1:31])
 
 #修剪文件的名字
 names(RasterData)
@@ -57,7 +57,7 @@ MyColorKey <- list(at = labelPosition,
                   )
 
 #使用levelplot进行绘图
-levelplot(RasterData,
+plt <- levelplot(RasterData,
           
           col.regions = Color,
           at = labelPosition,
@@ -86,3 +86,6 @@ levelplot(RasterData,
           
           maxpixels = 2e5
          )
+
+#叠加绘图
+plt + latticeExtra::layer(sp.lines(Boundary_outline, col="gray50", lwd=0.5))
